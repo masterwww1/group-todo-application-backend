@@ -42,7 +42,7 @@ describe("Auth Integration Test", () => {
         email: userData.email,
         name: userData.name,
       });
-      expect(response.body).toHaveProperty("password_hash");
+      expect(response.body).not.toHaveProperty("password_hash");
     });
 
     it("should return validation error for invalid inputs", async () => {
@@ -54,7 +54,7 @@ describe("Auth Integration Test", () => {
 
       const res = await request(app).post("/api/auth/register").send(userData);
 
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(400);
       expect(res.body.details).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -81,7 +81,7 @@ describe("Auth Integration Test", () => {
       const res = await request(app).post("/api/auth/register").send(userData);
 
       expect(res.status).toBe(400);
-      expect(res.body.error).toBe("User already registered");
+      expect(res.body.error).toBe("Email already registered");
     });
   });
 
@@ -164,9 +164,11 @@ describe("Auth Integration Test", () => {
       const userData = createUserData();
       const registerRes = await request(app)
         .post("/api/auth/register")
+        .set("x-test-user", testUserIP)
         .send(userData);
       const loginRes = await request(app)
         .post("/api/auth/login")
+        .set("x-test-user", testUserIP)
         .send({
           email: userData.email,
           password: "Password123!",
@@ -177,6 +179,7 @@ describe("Auth Integration Test", () => {
     it("should return user data", async () => {
       const res = await request(app)
         .get("/api/auth/me")
+        .set("x-test-user", testUserIP)
         .set("Authorization", `Bearer ${authToken}`);
 
 
@@ -193,6 +196,7 @@ describe("Auth Integration Test", () => {
     it("should return Unauthorized error for invalid token", async () => {
       const res = await request(app)
         .get("/api/auth/me")
+        .set("x-test-user", testUserIP)
         .set("Authorization", `Bearer invalid-token`);
 
       expect(res.status).toBe(401);
@@ -201,6 +205,7 @@ describe("Auth Integration Test", () => {
     it("should return Unauthorized error for missing token", async () => {
       const res = await request(app)
         .get("/api/auth/me")
+        .set("x-test-user", testUserIP);
 
       expect(res.status).toBe(401);
     });
@@ -213,9 +218,11 @@ describe("Auth Integration Test", () => {
       const userData = createUserData();
       const registerRes = await request(app)
         .post("/api/auth/register")
+        .set("x-test-user", testUserIP)
         .send(userData);
       const loginRes = await request(app)
         .post("/api/auth/login")
+        .set("x-test-user", testUserIP)
         .send({
           email: userData.email,
           password: "Password123!",
@@ -226,6 +233,7 @@ describe("Auth Integration Test", () => {
     it("should logged out successfully.", async () => {
       const res = await request(app)
         .get("/api/auth/logout")
+        .set("x-test-user", testUserIP)
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(res.status).toBe(204);
@@ -234,6 +242,7 @@ describe("Auth Integration Test", () => {
     it("should return Unauthorized error for invalid token", async () => {
       const res = await request(app)
         .get("/api/auth/logout")
+        .set("x-test-user", testUserIP)
         .set("Authorization", `Bearer invalid-token`);
 
       expect(res.status).toBe(401);
