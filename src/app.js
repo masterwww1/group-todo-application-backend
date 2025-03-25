@@ -30,7 +30,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 
 if (process.env.NODE_ENV !== "test") {
-  app.use(morgan("combined", { stream: logger.info(message.trim()) }));
+  app.use(morgan('combined', {
+    stream: {
+      write: (message) => logger.info(message.trim())
+    }
+  }));
 }
 
 require("./config/passport");

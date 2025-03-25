@@ -68,6 +68,12 @@ git clone https://github.com/masterwww1/group-todo-application-backend.git
 cd group-todo-application-backend
 ```
 
+2. Install PostgreSQL
+
+```
+https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+```
+
 2. Install dependencies.
 
 ```
